@@ -89,9 +89,9 @@ public class Async<T> {
      *
      * @param onSuccess   callback.
      * @param onError     callback.
-     * @param onCompleted callback which be called after onSuccess or onError. NOTE: this will not
-     *                    be called when task is paused or stopped.
-     * @return
+     * @param onCompleted callback which be called after onSuccess or onError
+     * @return {@link com.tale.prettytask.TaskHandler} object. Use full to handle task follow
+     * life-cycle of Activity & Fragment
      */
     public TaskHandler execute(
             Action1<T> onSuccess,
@@ -106,9 +106,9 @@ public class Async<T> {
      *
      * @param onSuccess   callback.
      * @param onError     callback.
-     * @param onCompleted callback which be called after onSuccess or onError. NOTE: this will not
-     *                    be called when task is paused or stopped.
-     * @return
+     * @param onCompleted callback which be called after onSuccess or onError.
+     * @return {@link com.tale.prettytask.TaskHandler} object. Use full to handle task follow
+     * life-cycle of Activity & Fragment
      */
     public TaskHandler executeIO(
             Action1<T> onSuccess,
@@ -124,8 +124,7 @@ public class Async<T> {
      * @param executor    The executor to run.
      * @param onSuccess   callback.
      * @param onError     callback.
-     * @param onCompleted callback which be called after onSuccess or onError. NOTE: this will not
-     *                    be called when task is paused or stopped.
+     * @param onCompleted callback which be called after onSuccess or onError.
      * @return {@link com.tale.prettytask.TaskHandler} object. Use full to handle task follow
      * life-cycle of Activity & Fragment
      */
