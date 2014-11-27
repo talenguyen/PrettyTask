@@ -144,6 +144,8 @@ class TaskHandlerIml<T> implements TaskHandler {
         }
 
         isPaused = false;
+
+        release();
     }
 
     public void release() {
