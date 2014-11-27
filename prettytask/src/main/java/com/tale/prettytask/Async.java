@@ -3,6 +3,8 @@ package com.tale.prettytask;
 import com.tale.prettytask.functions.Action0;
 import com.tale.prettytask.functions.Action1;
 import com.tale.prettytask.functions.Function0;
+import com.tale.prettytask.functions.Function1;
+import com.tale.prettytask.operators.OperatorMap;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
@@ -78,10 +80,46 @@ public class Async<T> {
         }
     }
 
-    private final Function0<T> mFunction;
+    private Function0<T> mFunction;
 
     private Async(Function0<T> function) {
         this.mFunction = function;
+    }
+
+    /**
+     * Create a instance of Async.
+     * @param function the function to be execute.
+     * @return new instance of Async
+     */
+    public static <T> Async<T> create(Function0<T> function) {
+        if (function == null) {
+            if (function == null) {
+                throw new IllegalArgumentException("function can not be null");
+            }
+        }
+        return new Async<T>(function);
+    }
+
+    public Async<T> doNext(final Action1<T> action) {
+        mFunction = new Function0<T>() {
+            @Override public T call() {
+                final T result = mFunction.call();
+                action.call(result);
+                return result;
+            }
+        };
+        return this;
+    }
+
+    /**
+     * Call to transform the current stream into a new stream.
+     *
+     * @param function
+     * @param <T2>
+     * @return
+     */
+    public <T2> Async<T2> map(final Function1<T2, T> function) {
+        return new Async<T2>(new OperatorMap<T2, T>(mFunction, function));
     }
 
     /**
@@ -98,7 +136,7 @@ public class Async<T> {
             Action1<Throwable> onError,
             final Action0 onCompleted
     ) {
-        return execute(SERIAL_EXECUTOR, onSuccess, onError, onCompleted);
+        return execute(THREAD_POOL_EXECUTOR, onSuccess, onError, onCompleted);
     }
 
     /**

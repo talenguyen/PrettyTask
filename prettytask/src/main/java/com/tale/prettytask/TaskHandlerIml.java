@@ -3,7 +3,6 @@ package com.tale.prettytask;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.sun.istack.internal.NotNull;
 import com.tale.prettytask.functions.Action0;
 import com.tale.prettytask.functions.Action1;
 import com.tale.prettytask.functions.Function0;
@@ -26,7 +25,7 @@ class TaskHandlerIml<T> implements TaskHandler {
     private Thread mThread;
     private Handler mMainHandler = new Handler(Looper.getMainLooper());
 
-    TaskHandlerIml(Executor executor, Function0<T> function, @NotNull Action1<T> onSuccess, Action1<Throwable> onError, Action0 onCompleted) {
+    TaskHandlerIml(Executor executor, Function0<T> function, Action1<T> onSuccess, Action1<Throwable> onError, Action0 onCompleted) {
         this.mExecutor = executor;
         this.mFunction = function;
         this.mOnSuccess = new WeakReference<Action1<T>>(onSuccess);
