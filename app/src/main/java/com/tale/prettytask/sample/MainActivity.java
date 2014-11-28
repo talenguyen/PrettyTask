@@ -1,7 +1,6 @@
-package com.tale.prettytask;
+package com.tale.prettytask.sample;
 
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -13,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tale.prettytask.functions.Action1;
-import com.tale.prettytask.functions.Function0;
-import com.tale.prettytask.functions.Function1;
+import com.tale.prettytask.OnResult;
+import com.tale.prettytask.PrettyTask;
+import com.tale.prettytask.tasks.Task;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -59,7 +58,8 @@ public class MainActivity extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
-        private TaskHandler taskHandler;
+        private String TAG = PlaceholderFragment.class.getSimpleName();
+        private PrettyTask<String> mPrettyTask;
 
         public PlaceholderFragment() {
         }
@@ -77,51 +77,50 @@ public class MainActivity extends ActionBarActivity {
             super.onViewCreated(view, savedInstanceState);
             final TextView textView = (TextView) view.findViewById(R.id.tvMessage);
             textView.setText("Start");
-            taskHandler = Async.create(
-                    new Function0<Long>() {
-                        @Override public Long call() {
-                            SystemClock.sleep(5000);
-                            return System.currentTimeMillis();
+            mPrettyTask = PrettyTask.create(
+                    new Task<String>() {
+                        @Override public String call() {
+                            try {
+                                Log.d(TAG, String.format("Start at time: %d", System.currentTimeMillis()));
+                                Thread.sleep(5000);
+                                return String.format("Time: %d", System.currentTimeMillis());
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
                         }
                     }
-            ).map(
-                    new Function1<Long, Long>() {
-                        @Override public Long call(Long integer) {
-                            Log.d("PrettyTask", "map: " + integer);
-                            return integer + 1111;
+            ).onResult(
+                    new OnResult<String>() {
+                        @Override public void onSucceed(String result) {
+                            Log.d(TAG, "onSucceed: " + result);
+                            textView.setText(String.format("Succeed at: %d", System.currentTimeMillis()));
+                        }
+
+                        @Override public void onError(Throwable throwable) {
+                            Log.d(TAG, "onSucceed: " + throwable.getMessage());
+                        }
+
+                        @Override public void onCompleted() {
+                            Log.d(TAG, "onCompleted: " + System.currentTimeMillis());
                         }
                     }
-            ).map(
-                    new Function1<String, Long>() {
-                        @Override public String call(Long integer) {
-                            Log.d("PrettyTask", "map: " + integer);
-                            return String.valueOf(integer);
-                        }
-                    }
-            )
-                    .execute(
-                            new Action1<String>() {
-                                @Override public void call(String s) {
-                                    Log.d("PrettyTask", "onResult: " + s);
-                                    textView.setText(s);
-                                }
-                            }, null, null
-                    );
+            ).execute();
         }
 
         @Override public void onPause() {
+            mPrettyTask.pause();
             super.onPause();
-            taskHandler.pause();
         }
 
         @Override public void onResume() {
             super.onResume();
-            taskHandler.resume();
+            mPrettyTask.resume();
         }
 
         @Override public void onDestroyView() {
+            mPrettyTask.stop();
             super.onDestroyView();
-            taskHandler.stop();
         }
     }
 }
