@@ -2,7 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
 
     defaultConfig {
         applicationId "com.tale.prettytask.sample"
@@ -10,10 +14,11 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -23,5 +28,18 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.0'
     compile project(':prettytask')
+
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.1'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
+    androidTestCompile 'org.hamcrest:hamcrest-core:1.1'
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.1'
+    androidTestCompile 'org.hamcrest:hamcrest-integration:1.1'
+    androidTestCompile('com.jakewharton.espresso:espresso-support-v4:1.1-r3') {
+        // TODO workaround for http://b.android.com/65445
+        exclude group: 'com.android.support', module: 'support-v4'
+//        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'org.hamcrest'
+    }
 //    compile 'com.githum.talenguyen:PrettyTask:1.0.0-SNAPSHOT'
 }

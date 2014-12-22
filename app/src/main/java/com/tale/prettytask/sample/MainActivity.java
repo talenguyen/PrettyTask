@@ -1,10 +1,10 @@
 package com.tale.prettytask.sample;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.tale.prettytask.Action;
 import com.tale.prettytask.OnResult;
 import com.tale.prettytask.PrettyTask;
-import com.tale.prettytask.tasks.Task;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -77,49 +77,35 @@ public class MainActivity extends ActionBarActivity {
             super.onViewCreated(view, savedInstanceState);
             final TextView textView = (TextView) view.findViewById(R.id.tvMessage);
             textView.setText("Start");
-            mPrettyTask = PrettyTask.create(
-                    new Task<String>() {
-                        @Override public String call() {
-                            try {
-                                Log.d(TAG, String.format("Start at time: %d", System.currentTimeMillis()));
-                                Thread.sleep(5000);
-                                return String.format("Time: %d", System.currentTimeMillis());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }
-                    }
-            ).onResult(
-                    new OnResult<String>() {
-                        @Override public void onSucceed(String result) {
-                            Log.d(TAG, "onSucceed: " + result);
-                            textView.setText(String.format("Succeed at: %d", System.currentTimeMillis()));
-                        }
+            PrettyTask.create(new Action<String>() {
+                @Override public String call() {
+                    return "Success";
+                }
+            }).onResult(new OnResult<String>() {
+                @Override public void onSucceed(String result) {
+                    SystemClock.sleep(3000);
+                    textView.setText(result);
+                }
 
-                        @Override public void onError(Throwable throwable) {
-                            Log.d(TAG, "onSucceed: " + throwable.getMessage());
-                        }
+                @Override public void onError(Throwable throwable) {
 
-                        @Override public void onCompleted() {
-                            Log.d(TAG, "onCompleted: " + System.currentTimeMillis());
-                        }
-                    }
-            ).execute();
+                }
+
+                @Override public void onCompleted() {
+
+                }
+            }).execute();
         }
 
         @Override public void onPause() {
-            mPrettyTask.pause();
             super.onPause();
         }
 
         @Override public void onResume() {
             super.onResume();
-            mPrettyTask.resume();
         }
 
         @Override public void onDestroyView() {
-            mPrettyTask.stop();
             super.onDestroyView();
         }
     }
