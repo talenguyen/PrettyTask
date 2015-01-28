@@ -30,22 +30,26 @@ public class PrettyTask<T> {
 
     public <R> PrettyTask<R> map(final Func1<T, R> func1) {
         return new PrettyTask(new Func0<R>() {
-            @Override public R call() {
+            @Override public R call() throws Exception {
                 return func1.call(func.call());
             }
         });
     }
 
-    @TargetApi(Build.VERSION_CODES.CUPCAKE) public AsyncTask<Object, Void, Object> execute() {
+    @TargetApi(Build.VERSION_CODES.CUPCAKE) public Task<T> execute() {
+        final Task<T> task = new Task<T>(func, result);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            return new Task<T>(func, result).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            return new Task<T>(func, result).execute();
+            task.execute();
         }
+        return task;
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public AsyncTask<Object, Void, Object> executeSerial() {
-        return new Task<T>(func, result).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB) public Task<T> executeSerial() {
+        final Task<T> task = new Task<T>(func, result);
+        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        return task;
     }
 
 }
