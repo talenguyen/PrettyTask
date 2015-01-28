@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tale.prettytask.Action;
 import com.tale.prettytask.OnResult;
 import com.tale.prettytask.PrettyTask;
+import com.tale.prettytask.functions.Func0;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -77,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
             super.onViewCreated(view, savedInstanceState);
             final TextView textView = (TextView) view.findViewById(R.id.tvMessage);
             textView.setText("Start");
-            PrettyTask.create(new Action<String>() {
+            PrettyTask.create(new Func0<String>() {
                 @Override public String call() {
                     return "Success";
                 }
